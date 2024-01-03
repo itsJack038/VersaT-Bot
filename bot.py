@@ -7,6 +7,7 @@ import os
 import subprocess
 from pyrogram import Client, idle, emoji, filters
 from pyrogram.types import BotCommand
+from pyrogram.handlers.message_handler import MessageHandler
 import utils
 
 api_id = config.api_id
@@ -14,17 +15,20 @@ api_hash = config.api_hash
 bot_token = config.bot_token
 ids = [1118476751, -1001956807784] # [5502597376]
 bot_commands = [
-    BotCommand('start','Check bot alive status.'),
+    BotCommand('start', 'Check bot alive status.'),
     BotCommand('help', 'Get available commands.'),
     BotCommand('ls', 'Get list of available files and folders.'),
     BotCommand('download', 'or /dl to download files.'),
     BotCommand('upload', 'or /up to upload files.'),
     BotCommand('exec', 'or /e to execute shell commands.'),
     BotCommand('speedtest', 'or /st to check internet speed.'),
+    BotCommand('systeminfo', 'or /sys to check system information.'),
     BotCommand('ping', 'Check ping.')
 ]
 
 app = Client("VersaT-bot", api_id, api_hash, bot_token=bot_token)
+
+# app.add_handler(MessageHandler(utils.start, filters=filters.command(['start'])))
 
 @app.on_message(filters.command(['start']))
 def start_cmd(client, message):
@@ -58,7 +62,7 @@ def exec_cmd(client, message):
 def speedtest_cmd(client, message):
     utils.speedtest(client, message)
 
-@app.on_message(filters.command(['systeminfo']))
+@app.on_message(filters.command(['systeminfo', 'sys']))
 def system_info_cmd(client, message):
     utils.system_info(client, message)
 
@@ -70,15 +74,15 @@ def forward(client, message):
 async def ping_cmd(client, message):
     await utils.ping(client, message)
 
-@app.on_message(filters.command(['restart', 'r']))
-async def restart(_,__):
-    print("Restarting Bot...") 
-    await app.stop()
-    await app.start()
-    print("Restarting Bot...") 
-    await utils.sendMessage(app, ids, 'Restart')
-    # await app.set_bot_commands(bot_commands)
-    await idle()
+# @app.on_message(filters.command(['restart', 'r']))
+# async def restart(_,__):
+#     print("Restarting Bot...") 
+#     await app.stop()
+#     await app.start()
+#     print("Restarting Bot...") 
+#     await utils.sendMessage(app, ids, 'Restart')
+#     # await app.set_bot_commands(bot_commands)
+#     await idle()
 
 @app.on_message(filters.command(['tg']))
 def TG_link_dl_cld(client, message):
@@ -86,12 +90,8 @@ def TG_link_dl_cld(client, message):
 
 # @app.on_message()
 # def hello(client, message):
-#     print(message.from_user.id, '-', message.from_user.first_name, ':', message.text)
 #     print(message)
 #     message.reply("Hi...I am Alive !!", True)
-
-if not os.path.exists('./downloads'):
-    os.mkdir('downloads')
 
 async def main():
     await app.start()
@@ -100,4 +100,7 @@ async def main():
     # await app.set_bot_commands(bot_commands)
     await idle()
     
+if not os.path.exists('./downloads'):
+    os.mkdir('downloads')
+
 app.run(main())
